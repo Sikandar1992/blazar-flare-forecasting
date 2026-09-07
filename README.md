@@ -35,8 +35,7 @@ pip install -r requirements.txt
 **Note on reproducibility:** LR and PLR results (including PLR, the
 paper's best-performing model) were exactly reproducible across the
 environments tested. RF results showed small variation across
-package versions/machines (WATCH AUC ranging ~0.77–0.79, BSS ranging
-~−0.07 to −0.13), consistent with known sensitivity of parallelized
+package versions/machines, consistent with known sensitivity of parallelized
 ensemble methods to environment differences even under a fixed
 random seed. Use the pinned versions in `requirements.txt` to most
 closely reproduce the reported numbers.
