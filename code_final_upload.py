@@ -2028,33 +2028,101 @@ def save_timeline_probabilities_csv(outpath, T_end, y_watch, y_trigger,
 
 def export_training_dataset_csv(all_data, keys_ref, train_end_boundary, outdir):
     """
-    Export the full per-window feature/label table for every source, for
-    Zenodo/data-availability archiving. One row per rolling window.
+    Export TRAIN windows only for archival/training use.
+
+    Labels Y_watch and Y_trigger are generated using the TRAIN-only
+    flare catalogue. TEST windows are intentionally excluded because
+    retrospective FULL-catalogue evaluation labels are generated later.
     """
     outpath = Path(outdir) / "training_dataset_all_sources.csv"
+
     header = (["source", "T_end_mjd", "split"]
               + list(keys_ref)
               + ["Y_watch", "Y_trigger"])
 
+    n_written = 0
+
     with open(outpath, "w", newline="") as fh:
         writer = csv.writer(fh)
         writer.writerow(header)
+
         for src_name, d in all_data.items():
             if "X" not in d or "Y_watch" not in d:
                 continue
-            X_s      = d["X"]
-            T_end_s  = d["T_end"]
-            Yw_s     = d["Y_watch"]
-            Yt_s     = d["Y_trigger"]
-            for i in range(len(T_end_s)):
-                split = "TRAIN" if T_end_s[i] <= train_end_boundary else "TEST"
-                row = ([src_name, f"{T_end_s[i]:.6f}", split]
-                       + [f"{v:.8g}" for v in X_s[i]]
-                       + [int(Yw_s[i]), int(Yt_s[i])])
+
+            X_s = d["X"]
+            T_end_s = d["T_end"]
+            Yw_s = d["Y_watch"]
+            Yt_s = d["Y_trigger"]
+
+            train_mask = T_end_s <= train_end_boundary
+
+            for i in np.where(train_mask)[0]:
+                row = (
+                    [src_name, f"{T_end_s[i]:.6f}", "TRAIN"]
+                    + [f"{v:.8g}" for v in X_s[i]]
+                    + [int(Yw_s[i]), int(Yt_s[i])]
+                )
                 writer.writerow(row)
+                n_written += 1
 
     print(f"  Training dataset CSV → {outpath}")
+    print(f"  TRAIN rows exported: {n_written}")
+
     return outpath
+    
+    
+    
+    
+def export_test_evaluation_dataset_csv(all_data, keys_ref,
+                                       train_end_boundary, outdir):
+    """
+    Export TEST windows for retrospective evaluation.
+
+    Y_watch and Y_trigger are the FULL-catalogue labels generated in
+    Step 4 and stored as Y_watch_eval and Y_trigger_eval locally before
+    this function is called.
+    """
+    outpath = Path(outdir) / "test_evaluation_dataset.csv"
+
+    header = (["source", "T_end_mjd", "split"]
+              + list(keys_ref)
+              + ["Y_watch_eval", "Y_trigger_eval"])
+
+    n_written = 0
+
+    with open(outpath, "w", newline="") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(header)
+
+        for src_name, d in all_data.items():
+            if "X" not in d:
+                continue
+
+            X_s = d["X"]
+            T_end_s = d["T_end"]
+
+            if "Y_watch_eval" not in d or "Y_trigger_eval" not in d:
+                continue
+
+            Yw_eval_s = d["Y_watch_eval"]
+            Yt_eval_s = d["Y_trigger_eval"]
+
+            test_mask = T_end_s > train_end_boundary
+
+            for i in np.where(test_mask)[0]:
+                row = (
+                    [src_name, f"{T_end_s[i]:.6f}", "TEST"]
+                    + [f"{v:.8g}" for v in X_s[i]]
+                    + [int(Yw_eval_s[i]), int(Yt_eval_s[i])]
+                )
+                writer.writerow(row)
+                n_written += 1
+
+    print(f"  Test evaluation dataset CSV → {outpath}")
+    print(f"  TEST rows exported: {n_written}")
+
+    return outpath    
 # ============================================================
 # 8) DUAL-THRESHOLD GRID SEARCH
 # ============================================================
@@ -2856,7 +2924,15 @@ if __name__ == "__main__":
         horizon_days=TRIGGER_HORIZON_DAYS,
         min_lead_days=0.0,
         exclude_active_flare=True)
-
+    d_target["Y_watch_eval"] = Y_full_target_watch        
+    d_target["Y_trigger_eval"] = Y_full_target_trigger
+    
+    export_test_evaluation_dataset_csv(
+    all_data,
+    keys_ref,
+    TRAIN_END_BOUNDARY,
+    OUTDIR
+    )
     y_test_eval_watch = Y_full_target_watch[test_mask_target] \
         if np.any(test_mask_target) else None
     y_test_eval_trigger = Y_full_target_trigger[test_mask_target] \
