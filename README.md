@@ -4,24 +4,24 @@ Code accompanying:
 
 **Shah, Z. & Akbar, S. (2026)**, "Advance warning of γ-ray blazar flares from *Fermi*-LAT light curves: a strictly causal machine-learning backtest."
 
-- Zahir Shah — Manipal Centre for Natural Sciences, Centre of Excellence, Manipal Academy of Higher Education, Manipal 576104, India (zahir.shah@manipal.edu)
-- Sikandar Akbar — Department of Physics, University of Kashmir, Srinagar 190006, India (darprince46@gmail.com) 
+* Zahir Shah — Manipal Centre for Natural Sciences, Centre of Excellence, Manipal Academy of Higher Education, Manipal 576104, India ([zahir.shah@manipal.edu](mailto:zahir.shah@manipal.edu))
+* Sikandar Akbar — Department of Physics, University of Kashmir, Srinagar 190006, India ([darprince46@gmail.com](mailto:darprince46@gmail.com))
 
 ## What this code does
 
 This repository contains the full analysis pipeline described in the paper, including:
 
-- Bayesian-Blocks flare identification
-- strictly causal rolling-window feature extraction
-- extraction of 42 variability features per window
-- WATCH/TRIGGER label assignment
-- Logistic Regression (LR)
-- Polynomial Logistic Regression (PLR)
-- Random Forest (RF)
-- TRAIN-only preprocessing, calibration, and threshold selection
-- held-out evaluation using ROC AUC, average precision (AP), and Brier Skill Score (BSS)
-- block-permutation and block-bootstrap statistical tests
-- generation of diagnostic figures, timelines, and lead-time tables
+* Bayesian-Blocks flare identification
+* strictly causal rolling-window feature extraction
+* extraction of 42 variability features per window
+* WATCH/TRIGGER label assignment
+* Logistic Regression (LR)
+* Polynomial Logistic Regression (PLR)
+* Random Forest (RF)
+* TRAIN-only preprocessing, calibration, and threshold selection
+* held-out evaluation using ROC AUC, average precision (AP), and Brier Skill Score (BSS)
+* block-permutation and block-bootstrap statistical tests
+* generation of diagnostic figures, timelines, and lead-time tables
 
 The primary machine-learning analysis reported in the manuscript uses LR, PLR, and RF.
 
@@ -88,9 +88,9 @@ It contains **9,004 TRAIN rolling windows** from the 14 γ-ray blazars used in t
 
 Each row corresponds to a 365-day rolling window sampled with a 7-day step and contains:
 
-- 3 metadata columns: `source`, `T_end_mjd`, and `split`
-- 42 derived features
-- 2 forecast labels: `Y_watch` and `Y_trigger`
+* 3 metadata columns: `source`, `T_end_mjd`, and `split`
+* 42 derived features
+* 2 forecast labels: `Y_watch` and `Y_trigger`
 
 The deposited dataset contains TRAIN rows only.
 
@@ -139,23 +139,25 @@ No future observations are used to construct the feature vector for a given pred
 
 The primary analysis reported in the manuscript uses:
 
-- Logistic Regression (LR)
-- Polynomial Logistic Regression (PLR)
-- Random Forest (RF)
+* Logistic Regression (LR)
+* Polynomial Logistic Regression (PLR)
+* Random Forest (RF)
 
 The repository also contains:
 
-- an XGBoost classifier
-- a dual-threshold alert-state system
+* an XGBoost classifier
+* a dual-threshold alert-state system
 
 These additional components are retained for exploratory reference but are not part of the primary results discussed in the manuscript.
 
 ## Related data
 
-The derived training dataset containing the 42-feature vectors and WATCH/TRIGGER labels for all 14 sources is archived separately as a Zenodo Dataset deposit:
+The derived training dataset containing the 42-feature vectors and WATCH/TRIGGER labels for all 14 sources is archived separately as a Zenodo Dataset deposit.
 
-**Zenodo Dataset:**  
-[Dataset DOI — to be inserted]
+**Zenodo Dataset DOI:**
+https://doi.org/10.5281/zenodo.22649229
+
+This DOI represents the dataset record across versions and resolves to the latest published version.
 
 The deposited dataset contains the TRAIN feature/label table only. The retrospective TEST evaluation dataset is not included.
 
@@ -165,10 +167,10 @@ The Fermi-LAT daily light curves used to construct the feature table are already
 
 This analysis software is archived through Zenodo as version v1.0.
 
-**Zenodo Software DOI:**  
+**Zenodo Software DOI:**
 https://doi.org/10.5281/zenodo.22643599
 
-**Zenodo record:**  
+**Zenodo record:**
 https://zenodo.org/records/22643599
 
 The archived software release corresponds to the code in this repository.
@@ -185,10 +187,10 @@ If you use this software, please cite:
 
 and the archived software release:
 
-**Shah, Z. & Akbar, S. (2026), v1.0.**  
+**Shah, Z. & Akbar, S. (2026), v1.0.**
 https://doi.org/10.5281/zenodo.22643599
 
 If you use the deposited training dataset, please additionally cite the corresponding Zenodo Dataset record:
 
-**Zenodo Dataset DOI:**  
-[Dataset DOI — to be inserted]
+**Shah, Z. & Akbar, S. (2026), Training Dataset for Advance Warning of γ-ray Blazar Flares from Fermi-LAT Light Curves.**
+https://doi.org/10.5281/zenodo.22649229
