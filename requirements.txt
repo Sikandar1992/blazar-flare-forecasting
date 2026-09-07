@@ -1,0 +1,20 @@
+# Environment used to generate the results reported in Shah & Akbar (2026),
+# "Advance warning of gamma-ray blazar flares from Fermi-LAT light curves:
+# a strictly causal machine-learning backtest" (Table 3).
+#
+# All reported model results (LR, PLR, RF) correspond to this exact
+# environment. We note that the Random Forest (RF) results in particular
+# showed small variation 
+# across different package versions/machines during internal testing,
+# consistent with known sensitivity of parallelized ensemble methods to
+# environment differences even under a fixed random seed. Logistic
+# Regression (LR) and Polynomial Logistic Regression (PLR) -- including
+# PLR, the paper's best-performing model -- were exactly reproducible
+# across environments tested. Users wishing to exactly reproduce Table 3
+# should use the package versions pinned below.
+
+numpy==2.3.5
+scipy==1.18.0
+matplotlib==3.10.6
+astropy==7.2.0
+scikit-learn==1.7.2
