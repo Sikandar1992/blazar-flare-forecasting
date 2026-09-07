@@ -98,7 +98,7 @@ The derived training dataset (42-feature vectors and WATCH/TRIGGER
 labels per rolling window, for all 14 sources) is archived as a
 separate Zenodo Dataset deposit: (https://zenodo.org/records/22643599).
 
-Raw Fermi-LAT light curves are not redistributed here; they are
+ Fermi-LAT light curves are distributed here; they are also
 publicly available from the Fermi-LAT Light Curve Repository
 (Abdollahi et al. 2023).
 
