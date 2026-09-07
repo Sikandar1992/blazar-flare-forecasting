@@ -5,7 +5,7 @@ Code accompanying:
 **Shah, Z. & Akbar, S. (2026)**, "Advance warning of γ-ray blazar flares from *Fermi*-LAT light curves: a strictly causal machine-learning backtest."
 
 - Zahir Shah — Manipal Centre for Natural Sciences, Centre of Excellence, Manipal Academy of Higher Education, Manipal 576104, India (zahir.shah@manipal.edu)
-- Sikandar Akbar — Department of Physics, University of Kashmir, Srinagar 190006, India (darprince46@gmail.com) — corresponding author
+- Sikandar Akbar — Department of Physics, University of Kashmir, Srinagar 190006, India (darprince46@gmail.com) 
 
 ## What this code does
 
