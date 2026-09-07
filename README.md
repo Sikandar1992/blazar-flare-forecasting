@@ -2,52 +2,58 @@
 
 Code accompanying:
 
-**Shah, Z. & Akbar, S. (2026)**, "Advance warning of γ-ray blazar flares
-from *Fermi*-LAT light curves: a strictly causal machine-learning
-backtest."
+**Shah, Z. & Akbar, S. (2026)**, "Advance warning of γ-ray blazar flares from *Fermi*-LAT light curves: a strictly causal machine-learning backtest."
 
-- Zahir Shah  — Manipal Centre for Natural
-  Sciences, Centre of Excellence, Manipal Academy of Higher Education,
-  Manipal 576104, India (zahir.shah@manipal.edu)
-- Sikandar Akbar — Department of Physics, University of Kashmir,
-  Srinagar 190006, India (darprince46@gmail.com) — corresponding author
+- Zahir Shah — Manipal Centre for Natural Sciences, Centre of Excellence, Manipal Academy of Higher Education, Manipal 576104, India (zahir.shah@manipal.edu)
+- Sikandar Akbar — Department of Physics, University of Kashmir, Srinagar 190006, India (darprince46@gmail.com) — corresponding author
 
 ## What this code does
 
-This repository contains the full analysis pipeline described in the
-paper: Bayesian-Blocks flare identification, rolling-window feature
-extraction (42 variability features per window), WATCH/TRIGGER label
-assignment, model training (Logistic Regression, Polynomial Logistic
-Regression, Random Forest), TRAIN-only calibration and threshold
-selection, held-out evaluation (ROC AUC, AP, BSS, block-permutation
-and block-bootstrap tests), and generation of the diagnostic and
-timeline figures used in the manuscript.
+This repository contains the full analysis pipeline described in the paper, including:
+
+- Bayesian-Blocks flare identification
+- strictly causal rolling-window feature extraction
+- extraction of 42 variability features per window
+- WATCH/TRIGGER label assignment
+- Logistic Regression (LR)
+- Polynomial Logistic Regression (PLR)
+- Random Forest (RF)
+- TRAIN-only preprocessing, calibration, and threshold selection
+- held-out evaluation using ROC AUC, average precision (AP), and Brier Skill Score (BSS)
+- block-permutation and block-bootstrap statistical tests
+- generation of diagnostic figures, timelines, and lead-time tables
+
+The primary machine-learning analysis reported in the manuscript uses LR, PLR, and RF.
+
+An XGBoost classifier and a dual-threshold alert-state system are also included in the repository for exploratory reference. These components are not part of the primary analysis reported in the manuscript.
 
 ## Requirements
 
-See `requirements.txt` for the exact package versions used to
-generate the results reported in the paper (Table 3). Install with:
+See `requirements.txt` for the package versions used to generate the results reported in the paper, including the model-comparison results in Table 3.
 
-```
+Install the required packages with:
+
+```bash
 pip install -r requirements.txt
 ```
 
-**Note on reproducibility:** LR and PLR results (including PLR, the
-paper's best-performing model) were exactly reproducible across the
-environments tested. RF results showed small variation across
-package versions/machines, consistent with known sensitivity of parallelized
-ensemble methods to environment differences even under a fixed
-random seed. Use the pinned versions in `requirements.txt` to most
-closely reproduce the reported numbers.
+### Reproducibility note
+
+LR and PLR results, including the PLR results reported as the best-performing model in the paper, were reproducible across the environments tested.
+
+RF results showed small variation across package versions and machines, consistent with sensitivity of parallelized ensemble methods to environment differences even when a fixed random seed is used.
+
+For the closest reproduction of the published results, use the package versions specified in `requirements.txt`.
 
 ## Input data
 
-The script expects 14 Fermi-LAT daily light-curve CSV files (as
-downloaded from the Fermi-LAT Light Curve Repository; Abdollahi et
-al. 2023), placed in the same working directory as the script, with
-the following exact filenames:
+The analysis uses 14 Fermi-LAT daily light-curve CSV files obtained from the Fermi-LAT Light Curve Repository (LCR; Abdollahi et al. 2023).
 
-```
+The downloaded Fermi-LAT light curves used in this analysis are included in this GitHub repository. They are therefore **not duplicated in the separate Zenodo dataset deposit**.
+
+The required input files are:
+
+```text
 4FGL_J1048.4+7143_daily_3_23_2026.csv      (target source)
 4FGL_J1512.8-0906_daily_3_24_2026.csv
 4FGL_J1224.9+2122_daily_3_24_2026.csv
@@ -64,43 +70,108 @@ the following exact filenames:
 4FGL_J0403.9-3605_daily_3_24_2026.csv
 ```
 
-If your downloaded filenames differ, either rename them to match the
-above, or edit the `LC_FILE` and `EXTRA_TRAIN_FILES` settings near the
-top of the script to point to your own paths.
+If your downloaded filenames differ, either rename them to match the filenames above or edit the `LC_FILE` and `EXTRA_TRAIN_FILES` settings near the top of the script to point to your own paths.
 
-The already-processed feature/label tables derived from these light
-curves (i.e., the actual model training data) are archived separately
-as a Dataset deposit — see "Related data" below — so re-running this
-pipeline from raw light curves is not required to inspect or reuse
-the training data itself.
+The light curves included in this repository allow the feature-extraction and label-generation pipeline to be independently rerun.
+
+The processed training feature/label table is archived separately as a Zenodo Dataset deposit. Users therefore do not need to rerun the feature-extraction pipeline merely to inspect or reuse the deposited training dataset.
+
+## Training dataset
+
+The processed training dataset generated by this code is:
+
+```text
+training_dataset_all_sources.csv
+```
+
+It contains **9,004 TRAIN rolling windows** from the 14 γ-ray blazars used in the analysis.
+
+Each row corresponds to a 365-day rolling window sampled with a 7-day step and contains:
+
+- 3 metadata columns: `source`, `T_end_mjd`, and `split`
+- 42 derived features
+- 2 forecast labels: `Y_watch` and `Y_trigger`
+
+The deposited dataset contains TRAIN rows only.
+
+The retrospective TEST evaluation data are not included in the separate dataset deposit.
+
+The training dataset is archived separately through Zenodo; see [Related data](#related-data).
 
 ## Running
 
-```
+Run the main analysis with:
+
+```bash
 python3 code_final_upload.py
 ```
 
-Outputs (figures, timelines, lead-time tables, the model comparison
-summary, and the exported training dataset CSV) are written to
-`pdf_flare_outputs_v3/` by default.
+The pipeline writes its outputs to:
+
+```text
+pdf_flare_outputs_v3/
+```
+
+by default.
+
+The output directory contains the generated diagnostic products, including figures, timelines, lead-time tables, model-comparison results, and the exported training dataset.
+
+## Analysis workflow
+
+The main pipeline follows these steps:
+
+1. Read the Fermi-LAT daily light curves.
+2. Identify flare intervals using Bayesian Blocks.
+3. Construct strictly causal 365-day rolling windows with a 7-day step.
+4. Calculate the 42 features for each window.
+5. Assign the WATCH and TRIGGER forecast labels.
+6. Construct the training dataset.
+7. Apply TRAIN-only preprocessing and feature imputation.
+8. Train the LR, PLR, and RF classifiers.
+9. Perform TRAIN-only calibration and threshold selection.
+10. Evaluate the models on the held-out target-source TEST period.
+11. Perform statistical significance tests.
+12. Generate the figures and tables used in the manuscript.
+
+No future observations are used to construct the feature vector for a given prediction time.
 
 ## A note on scope
 
-This script also includes an XGBoost classifier and a dual-threshold
-alert-state system, retained here for exploratory reference. Neither
-is part of the analysis reported in the manuscript — only the
-Logistic Regression, Polynomial Logistic Regression, and Random
-Forest results (Table 3) are discussed in the paper.
+The primary analysis reported in the manuscript uses:
+
+- Logistic Regression (LR)
+- Polynomial Logistic Regression (PLR)
+- Random Forest (RF)
+
+The repository also contains:
+
+- an XGBoost classifier
+- a dual-threshold alert-state system
+
+These additional components are retained for exploratory reference but are not part of the primary results discussed in the manuscript.
 
 ## Related data
 
-The derived training dataset (42-feature vectors and WATCH/TRIGGER
-labels per rolling window, for all 14 sources) is archived as a
-separate Zenodo Dataset deposit: (https://zenodo.org/records/22643599).
+The derived training dataset containing the 42-feature vectors and WATCH/TRIGGER labels for all 14 sources is archived separately as a Zenodo Dataset deposit:
 
- Fermi-LAT light curves are distributed here; they are also
-publicly available from the Fermi-LAT Light Curve Repository
-(Abdollahi et al. 2023).
+**Zenodo Dataset:**  
+[Dataset DOI — to be inserted]
+
+The deposited dataset contains the TRAIN feature/label table only. The retrospective TEST evaluation dataset is not included.
+
+The Fermi-LAT daily light curves used to construct the feature table are already included in this GitHub repository. They are also publicly available through the Fermi-LAT Light Curve Repository (Abdollahi et al. 2023).
+
+## Related software
+
+This analysis software is archived through Zenodo as version v1.0.
+
+**Zenodo Software DOI:**  
+https://doi.org/10.5281/zenodo.22643599
+
+**Zenodo record:**  
+https://zenodo.org/records/22643599
+
+The archived software release corresponds to the code in this repository.
 
 ## License
 
@@ -108,10 +179,16 @@ MIT License — see `LICENSE`.
 
 ## Citation
 
-If you use this code, please cite:
+If you use this software, please cite:
 
-Shah, Z. & Akbar, S. 2026, [journal / DOI once assigned]
+**Shah, Z. & Akbar, S. (2026)**, "Advance warning of γ-ray blazar flares from Fermi-LAT light curves: a strictly causal machine-learning backtest."
 
 and the archived software release:
 
-[Software Zenodo (https://zenodo.org/records/22643599)
+**Shah, Z. & Akbar, S. (2026), v1.0.**  
+https://doi.org/10.5281/zenodo.22643599
+
+If you use the deposited training dataset, please additionally cite the corresponding Zenodo Dataset record:
+
+**Zenodo Dataset DOI:**  
+[Dataset DOI — to be inserted]
