@@ -97,7 +97,7 @@ Forest results (Table 3) are discussed in the paper.
 
 The derived training dataset (42-feature vectors and WATCH/TRIGGER
 labels per rolling window, for all 14 sources) is archived as a
-separate Zenodo Dataset deposit: [DOI — insert once minted].
+separate Zenodo Dataset deposit: (https://zenodo.org/records/22643599).
 
 Raw Fermi-LAT light curves are not redistributed here; they are
 publicly available from the Fermi-LAT Light Curve Repository
@@ -115,4 +115,4 @@ Shah, Z. & Akbar, S. 2026, [journal / DOI once assigned]
 
 and the archived software release:
 
-[Software Zenodo DOI — insert once minted]
+[Software Zenodo (https://zenodo.org/records/22643599)
